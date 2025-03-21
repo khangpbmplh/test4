@@ -15,12 +15,12 @@ jobs:
     
     steps:
     - name: 📥 Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       
     - name: 🔧 Set up Node.js
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
-        node-version: 16
+        node-version: 18
         cache: 'npm'
         
     - name: 📦 Install dependencies
@@ -37,7 +37,7 @@ jobs:
       run: npm test -- --watchAll=false --coverage
       
     - name: 📝 Save test results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: test-results
         path: coverage/
@@ -46,7 +46,7 @@ jobs:
       run: npm run build
       
     - name: 📤 Upload build artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: build-files
         path: build
@@ -60,10 +60,10 @@ jobs:
     
     steps:
     - name: 📥 Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       
     - name: 📦 Download build artifact
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: build-files
         path: build
@@ -81,4 +81,4 @@ jobs:
     - name: 🔔 Deployment Status
       run: |
         echo "🎉 Deployment completed!"
-        echo "🔗 View your site at https://[your-username].github.io/cicd-demo" 
+        echo "🔗 View your site at https://$(echo $GITHUB_REPOSITORY | cut -d '/' -f 1).github.io/cicd-demo" 
