@@ -1,12 +1,24 @@
 name: CI/CD Pipeline
 
 on:
+  # Runs on pushes targeting the default branch
   push:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
   # Enable manual trigger from the GitHub Actions tab
   workflow_dispatch:
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
 
 env:
   SKIP_PREFLIGHT_CHECK: true
@@ -51,43 +63,29 @@ jobs:
     - name: 🔨 Build
       run: npm run build:prod
       
-    - name: 📤 Upload build artifact
-      uses: actions/upload-artifact@v4
+    - name: 📝 Create 404.html for SPA routing
+      run: cp build/index.html build/404.html
+    
+    - name: Setup Pages
+      uses: actions/configure-pages@v5
+      
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v3
       with:
-        name: build-files
         path: build
         
+  # Deployment job
   deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     name: 🚀 Deploy
     needs: build-and-test
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     # Only deploy on push to main/master, not on pull requests
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     
     steps:
-    - name: 📥 Checkout repository
-      uses: actions/checkout@v4
-      
-    - name: 📦 Download build artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: build-files
-        path: build
-        
-    - name: 📝 Create 404.html for SPA routing
-      run: cp build/index.html build/404.html
-      
-    - name: 🌐 Deploy to GitHub Pages
-      uses: JamesIves/github-pages-deploy-action@v4
-      with:
-        folder: build
-        branch: gh-pages
-        token: ${{ secrets.GITHUB_TOKEN }}
-        clean: true
-        
-    - name: 🔔 Deployment Status
-      run: |
-        echo "🎉 Deployment completed!"
-        echo "🔗 View your site at https://$(echo $GITHUB_REPOSITORY | cut -d '/' -f 1).github.io/test4" 
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4 
