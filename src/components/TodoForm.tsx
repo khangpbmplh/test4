@@ -18,7 +18,7 @@ const TodoForm: React.FC<TodoFormProps> = ({ addTodo }) => {
     
     setIsSubmitting(true);
     
-    // Simulate a small delay for visual feedback
+    // For testing, ensure the timeout is predictable
     setTimeout(() => {
       addTodo(text);
       setText('');

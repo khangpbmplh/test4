@@ -1,5 +1,6 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import App from './App';
 
 test('renders app title', () => {
@@ -8,7 +9,7 @@ test('renders app title', () => {
   expect(titleElement).toBeInTheDocument();
 });
 
-test('can add a new todo', () => {
+test('can add a new todo', async () => {
   render(<App />);
   
   // Find the input and add button
@@ -19,12 +20,17 @@ test('can add a new todo', () => {
   fireEvent.change(input, { target: { value: 'Test new todo' } });
   fireEvent.click(addButton);
   
-  // Check if the new todo is displayed
-  const newTodoElement = screen.getByText(/Test new todo/i);
+  // Wait for the timeout in the component to complete (it's 300ms)
+  await waitFor(() => {
+    expect(screen.getByTestId('todo-input')).not.toBeDisabled();
+  }, { timeout: 1000 });
+  
+  // Check if the new todo is displayed (using queryByText to handle if not found)
+  const newTodoElement = screen.queryByText('Test new todo');
   expect(newTodoElement).toBeInTheDocument();
 });
 
-test('can toggle todo completion', () => {
+test('can toggle todo completion', async () => {
   render(<App />);
   
   // Find the first todo text and click it to toggle completion
@@ -32,6 +38,6 @@ test('can toggle todo completion', () => {
   fireEvent.click(firstTodoText);
   
   // Find the "Undo" text which indicates the todo was completed
-  const undoButton = screen.getByText(/Undo/i);
-  expect(undoButton).toBeInTheDocument();
+  const undoText = await screen.findByText(/Undo/i);
+  expect(undoText).toBeInTheDocument();
 }); 
