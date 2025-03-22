@@ -68,7 +68,7 @@ function App() {
         </div>
         <div className="title">
           <h1>CI/CD Demo: Todo List</h1>
-          <p>A beautiful React app with GitHub Actions CI/CD</p>
+          <p>GitHub Actions CI/CD</p>
         </div>
         <div className="version-badge">v1.0.0</div>
       </header>
