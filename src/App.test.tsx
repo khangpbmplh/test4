@@ -5,7 +5,7 @@ import App from './App';
 
 test('renders app title', () => {
   render(<App />);
-  const titleElement = screen.getByText(/CI\/CD Demo: TTTTTodo List/i);
+  const titleElement = screen.getByText(/CI\/CD Demo: Todo List/i);
   expect(titleElement).toBeInTheDocument();
 });
 
